@@ -4,9 +4,14 @@ version = "0.1.0"
 description = "Sound Sentiment Analysis"
 authors = ["Alice Turrini <alice.turrini@studio.unibo.it>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
+fastai = "^2.7.18"
+librosa = "^0.10.2.post1"
+pandas = "^2.2.3"
+opencv-python = "^4.10.0.84"
 
 
 [build-system]
