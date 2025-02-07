@@ -61,17 +61,17 @@ class Plots:
 
     @staticmethod
     def plot_count_words(df):
-        df['word_count'] = df['text'].apply(lambda x: len(x.split()))
-        print(df[df['word_count'] <= 3][['word_count', 'text', "wav_id"]])
+        word_counts = df['text'].apply(lambda x: len(x.split()))
+        print(df[word_counts <= 3][['text', "wav_id"]])
 
-        max_word_count_corpus = df['word_count'].max()
-        average_word_count_corpus = round(df['word_count'].mean(), 2)
+        max_word_count_corpus = word_counts.max()
+        average_word_count_corpus = round(word_counts.mean(), 2)
         print(f"Max word count: {max_word_count_corpus}")
         print(f"Average word count: {average_word_count_corpus}")
 
         fig = go.Figure()
         fig.add_trace(go.Histogram(
-            x=df['word_count'],
+            x=word_counts,
             nbinsx=50,
             marker_color='blue',
             name="Word Count"
@@ -213,17 +213,15 @@ def process_text(df):
     return df
 
 
-def data_get_info(df, wav_id=None, transcribe=False):
+def data_get_info(df, wav_id=None):
     if wav_id == None:
         wav_id = random.randint(0, len(df) - 1)
 
-    path_audio = df["audio_path"][wav_id] 
-    if transcribe:
-        model = whisper.load_model("tiny", device = "cuda")
-        text = model.transcribe(path_audio, without_timestamps=False)
-        print(text)
+    path_audio = df.loc[df['wav_id'] == wav_id, 'audio_path'].values[0]
+    text = df.loc[df['wav_id'] == wav_id, 'text'].values[0]
+    label = df.loc[df['wav_id'] == wav_id, 'label'].values[0]
 
-    print(f"Audio {wav_id} \tLabel for the audio: ", df["label"][wav_id])
+    print(f"Audio {wav_id} \tLabel for the audio: {label} \n\tText: {text}")
     return Audio(filename=path_audio)
 
 def get_audio_duration(audio_path):

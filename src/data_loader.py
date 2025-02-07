@@ -14,13 +14,12 @@ class SoundDatasetFirstTime:
     def load_datasets(self) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Load the data from the given data directory.
-        :param data_splitting: Type of data to load (e.g. 'train', 'test', 'val').
+        :param data_splitting: Type of data to load (e.g. 'train', 'val').
         :return: A tuple of pandas DataFrames containing the loaded data for train, val, and test.
         """
-        df_test = self.load_test()
         df_val = self.load_val()
         df_train = self.load_train()
-        return df_train, df_val, df_test
+        return df_train, df_val
 
     def load_train(self) -> pd.DataFrame:
         """
@@ -29,6 +28,7 @@ class SoundDatasetFirstTime:
         """
         data_label_path = os.path.join(self.dataset_path, "train", "train.csv")
         df_train = pd.read_csv(data_label_path)
+        df_train['wav_id'] = df_train['wav_id'].astype(str).apply(lambda x: f"1_{x}")
         df_train = self.add_wav_path(df_train, "train")
         return df_train
     
@@ -39,6 +39,7 @@ class SoundDatasetFirstTime:
         """
         data_label_path = os.path.join(self.dataset_path, "val/val.csv")
         df_val = pd.read_csv(data_label_path)
+        df_val['wav_id'] = df_val['wav_id'].astype(str).apply(lambda x: f"2_{x}")
         df_val = self.add_wav_path(df_val, "val")
         return df_val
     
@@ -68,20 +69,19 @@ class SoundDataset:
     def load_datasets(self) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Load the data from the given data directory.
-        :param data_splitting: Type of data to load (e.g. 'train', 'test', 'val').
-        :return: A tuple of pandas DataFrames containing the loaded data for train, val, and test.
+        :param data_splitting: Type of data to load (e.g. 'train'', 'val').
+        :return: A tuple of pandas DataFrames containing the loaded data for train, val.
         """
-        df_test = self.load_test()
-        df_val = self.load_val()
         df_train = self.load_train()
-        return df_train, df_val, df_test
+        df_val = self.load_val()
+        return df_train, df_val
 
     def load_train(self) -> pd.DataFrame:
         """
         Load the training data from the dataset.
         :return: A pandas DataFrame containing the training data.
         """
-        data_label_path = os.path.join(self.dataset_path, "train_dataset.xlsx")
+        data_label_path = os.path.join(self.dataset_path, "train.xlsx")
         df_train = pd.read_excel(data_label_path, index_col=False)
         return df_train
     
@@ -90,7 +90,7 @@ class SoundDataset:
         Load the validation data from the dataset.
         :return: A pandas DataFrame containing the validation data.
         """
-        data_label_path = os.path.join(self.dataset_path, "val_dataset.xlsx")
+        data_label_path = os.path.join(self.dataset_path, "val.xlsx")
         df_val = pd.read_excel(data_label_path, index_col=False)
         return df_val
     
@@ -99,11 +99,22 @@ class SoundDataset:
         Load the test data from the dataset.
         :return: A pandas DataFrame containing the test data.
         """
-        data_label_path = os.path.join(self.dataset_path, "test_dataset.xlsx")
+        data_label_path = os.path.join(self.dataset_path, "test.xlsx")
         df_test = pd.read_excel(data_label_path, index_col=False)
         return df_test
 
     def save_dataset(self, df, name):
         df.to_excel(f"../Dataset/{name}.xlsx", index=False)
         print(f"Dataset saved as {name}.xlsx")  
+
+def modify_path_and_id(row):
+    if "train" in row['audio_path']:
+        row['audio_path'] = row['audio_path'].replace("train", "all").replace("/all/", "/all/1_")
+        row['wav_id'] = f"1_{row['wav_id']}"
+    elif "val" in row['audio_path']:
+        row['audio_path'] = row['audio_path'].replace("val", "all").replace("/all/", "/all/2_")
+        row['wav_id'] = f"2_{row['wav_id']}"
+    else:
+        print("ERROR")
+    return row
 
