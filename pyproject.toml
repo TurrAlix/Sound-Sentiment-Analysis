@@ -1,18 +1,29 @@
 [tool.poetry]
-name = "pw-deep"
+name = "soundsentiment"
 version = "0.1.0"
-description = "Sound Sentiment Analysis"
+description = "Project work in deep learning, Sound Sentiment Analysis"
 authors = ["Alice Turrini <alice.turrini@studio.unibo.it>"]
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.10"
-fastai = "^2.7.18"
-librosa = "^0.10.2.post1"
+python = "^3.9"
+jupyter = "^1.1.1"
 pandas = "^2.2.3"
-opencv-python = "^4.10.0.84"
+numpy = "^1.21.0"
+matplotlib = "^3.4.0"
+librosa = "^0.10.2.post1"
+openai-whisper = "^20240930"
+torch = { version = "^2.0.1+cu121", source = "torch" }  # Change to cu121
+torchaudio = "^2.1.0"
+plotly = "^6.0.0"
+openpyxl = "^3.1.5"
+noisereduce = "^3.0.3"
+soundfile = "^0.13.1"
 
+[[tool.poetry.source]]
+name = "torch"
+url = "https://download.pytorch.org/whl/cu121"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]
