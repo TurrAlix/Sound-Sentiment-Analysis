@@ -1,3 +1,4 @@
 # Ignore the Dataset folder
 Dataset/
 *.lock
+*.pyc

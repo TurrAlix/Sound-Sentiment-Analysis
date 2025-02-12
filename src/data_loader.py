@@ -74,7 +74,8 @@ class SoundDataset:
         """
         df_train = self.load_train()
         df_val = self.load_val()
-        return df_train, df_val
+        df_test = self.load_test()
+        return df_train, df_val, df_test
 
     def load_train(self) -> pd.DataFrame:
         """
