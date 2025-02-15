@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Project work in deep learning, Sound Sentiment Analysis"
 authors = ["Alice Turrini <alice.turrini@studio.unibo.it>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -19,6 +20,9 @@ plotly = "^6.0.0"
 openpyxl = "^3.1.5"
 noisereduce = "^3.0.3"
 soundfile = "^0.13.1"
+notebook = "^7.3.2"
+ipykernel = "^6.29.5"
+transformers = "^4.48.3"
 
 [[tool.poetry.source]]
 name = "torch"

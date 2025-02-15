@@ -1,4 +1,5 @@
 # Ignore the Dataset folder
-Dataset/
+Dataset/all/
+Dataset/all_sr_2k/
 *.lock
 *.pyc
