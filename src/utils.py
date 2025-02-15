@@ -10,6 +10,8 @@ from IPython.display import Audio
 from plotly.subplots import make_subplots
 import noisereduce as nr
 import os
+import torchaudio
+import torch
 
 class Plots:
     @staticmethod
@@ -195,7 +197,7 @@ class Audio2Text:
         transcriptions = self.process_audio_files(audio_files, batch_size, checkpoint_file)
         df['text'] = df['audio_path'].map(transcriptions)
         df = process_text(df)
-        df.to_excel(f"../Dataset/{name}_dataset.xlsx", index=False)
+        df.to_excel(f"../Dataset/{name}.xlsx", index=False)
         return df
 
 # Function to remove illegal characters from the text
@@ -245,7 +247,24 @@ def add_sample_rate(df):
         audio_path = row['audio_path']
         _, sr = librosa.load(audio_path, sr=None)
         df.at[idx, 'sampling_rate'] = sr
-        print(f"Sampling rate of {audio_path}: {sr} Hz - {df.at[idx, 'sampling_rate']} Hz")
+        print(f"Sampling rate of {audio_path}: {df.at[idx, 'sampling_rate']} Hz")
+
+def get_info_sample_rate(df):
+    list_sr = []
+    for _, row in df.iterrows():
+        audio_path = row['audio_path']
+        _, sr = librosa.load(audio_path, sr=None)
+        list_sr.append(sr)
+    return list(set(list_sr))
+
+def change_sample_rate(file_path, target_sample_rate=16000):
+    waveform, sample_rate = torchaudio.load(file_path)
+    if sample_rate != target_sample_rate:
+        resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=target_sample_rate)
+        waveform = resampler(waveform)
+
+    torchaudio.save(file_path, waveform, target_sample_rate)
+    waveform, sample_rate = torchaudio.load(file_path)
 
 
 def slow_down(df):
@@ -313,3 +332,21 @@ def add_text(df, checkpoint_file):
             df['text'] = df['audio_path'].map(text_ckpt_data)
     df = process_text(df)
     return df
+
+
+def sample_rate_16k(df):
+    for index, row in df.iterrows():
+        print(f"Index: {index}, \t\tFile: {row['audio_path']}")
+        file_path = row['audio_path']
+        change_sample_rate(file_path)
+
+def extract_single_embedding(audio_path, wav2vec2, processor):
+    audio_waveform, sr = librosa.load(audio_path, sr=None)
+    # process the audio to the correct format
+    inputs = processor(audio_waveform, sampling_rate=16000, return_tensors="pt", padding=True)
+    inputs = {key: val.to('cuda' if torch.cuda.is_available() else 'cpu') for key, val in inputs.items()}
+    # get the embeddings
+    with torch.no_grad():
+        embeddings = wav2vec2(**inputs).last_hidden_state
+    # average pool the embeddings (for each audio file) 
+    return embeddings.mean(dim=1).cpu().numpy()  
