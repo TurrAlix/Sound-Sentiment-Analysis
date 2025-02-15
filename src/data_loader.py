@@ -66,13 +66,16 @@ class SoundDataset:
         """
         self.dataset_path = dataset_path
 
-    def load_datasets(self) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def load_datasets(self, balanced = True) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Load the data from the given data directory.
         :param data_splitting: Type of data to load (e.g. 'train'', 'val').
         :return: A tuple of pandas DataFrames containing the loaded data for train, val.
         """
-        df_train = self.load_train()
+        if balanced:
+            df_train = self.load_train_balanced()
+        else:
+            df_train = self.load_train()
         df_val = self.load_val()
         df_test = self.load_test()
         return df_train, df_val, df_test
@@ -86,6 +89,16 @@ class SoundDataset:
         df_train = pd.read_excel(data_label_path, index_col=False)
         return df_train
     
+    def load_train_balanced(self) -> pd.DataFrame:
+        """
+        Load the training data from the dataset.
+        :return: A pandas DataFrame containing the training data.
+        """
+        data_label_path = os.path.join(self.dataset_path, "train_balanced.xlsx")
+        df_train = pd.read_excel(data_label_path, index_col=False)
+        return df_train
+    
+
     def load_val(self) -> pd.DataFrame:
         """
         Load the validation data from the dataset.

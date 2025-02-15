@@ -64,8 +64,6 @@ class Plots:
     @staticmethod
     def plot_count_words(df):
         word_counts = df['text'].apply(lambda x: len(x.split()))
-        print(df[word_counts <= 3][['text', "wav_id"]])
-
         max_word_count_corpus = word_counts.max()
         average_word_count_corpus = round(word_counts.mean(), 2)
         print(f"Max word count: {max_word_count_corpus}")
@@ -81,7 +79,7 @@ class Plots:
         fig.update_layout(
             title_text="Word Count Distribution",
             showlegend=False,
-            height=400,
+            height=300,
             width=800
         )
         fig.update_xaxes(title_text="Word Count")
