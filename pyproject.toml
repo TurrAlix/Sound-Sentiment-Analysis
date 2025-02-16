@@ -7,7 +7,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.10,<4.0"
 jupyter = "^1.1.1"
 pandas = "^2.2.3"
 numpy = "^1.21.0"
@@ -23,6 +23,8 @@ soundfile = "^0.13.1"
 notebook = "^7.3.2"
 ipykernel = "^6.29.5"
 transformers = "^4.48.3"
+scikit-image = "^0.25.1"
+opencv-python = "^4.11.0.86"
 
 [[tool.poetry.source]]
 name = "torch"
