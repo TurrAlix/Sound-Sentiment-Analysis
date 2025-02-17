@@ -348,3 +348,64 @@ def extract_single_embedding(audio_path, wav2vec2, processor):
         embeddings = wav2vec2(**inputs).last_hidden_state
     # average pool the embeddings (for each audio file) 
     return embeddings.mean(dim=1).cpu().numpy()  
+
+
+from sklearn.metrics import confusion_matrix
+def plot_confusion_matrix(y_true, y_pred, dataset_name):
+    cm = confusion_matrix(y_true, y_pred, labels=[0, 1, 2])  # For classes 0, 1, 2
+    labels = ["Negative", "Neutral", "Positive"]
+    fig = go.Figure(data=go.Heatmap(
+        z=cm,
+        x=labels,  # Predicted labels
+        y=labels,  # True labels
+        colorscale='Blues',
+        showscale=True,
+        hoverongaps=False,
+        text=cm,  # Annotate with the counts
+        texttemplate="%{text}"
+    ))
+    fig.update_layout(
+        title=f"Confusion Matrix - {dataset_name}",
+        xaxis_title="Predicted Label",
+        yaxis_title="True Label",
+        xaxis=dict(tickmode='array', tickvals=list(range(3)), ticktext=labels),
+        yaxis=dict(tickmode='array', tickvals=list(range(3)), ticktext=labels),
+        autosize=False,
+        width=500,
+        height=500
+    )
+    fig.show()
+
+def plot_epoch_losses(epoch_train_losses, epoch_val_losses):
+    fig = make_subplots(
+        rows=1, cols=1,
+        subplot_titles=("Epoch-wise Losses"),
+    )
+    fig.add_trace(
+        go.Scatter(x=list(range(1, len(epoch_train_losses) + 1)), y=epoch_train_losses,
+                   mode='lines+markers', name='Train Loss (per epoch)', line=dict(color='green')),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=list(range(1, len(epoch_val_losses) + 1)), y=epoch_val_losses,
+                   mode='lines+markers', name='Validation Loss (per epoch)', line=dict(color='orange')),
+        row=1, col=1
+    )
+    fig.update_layout(
+        title="Epoch-wise Training and Validation Losses",
+        xaxis_title="Epochs",
+        yaxis_title="Loss",
+        template="plotly_white",
+        legend=dict(x=0.5, y=-0.2, orientation="h", xanchor="center"),
+        height=500,
+        width=800
+    )
+    fig.show()
+
+def fix_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False

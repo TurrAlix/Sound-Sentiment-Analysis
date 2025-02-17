@@ -25,6 +25,7 @@ ipykernel = "^6.29.5"
 transformers = "^4.48.3"
 scikit-image = "^0.25.1"
 opencv-python = "^4.11.0.86"
+torchvision = {version = "^0.20.1", extras = ["cu121"], source = "torch"}
 
 [[tool.poetry.source]]
 name = "torch"
